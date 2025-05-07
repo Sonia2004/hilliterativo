@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSP con Hill Climbing Iterativo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Algoritmo TSP con Hill Climbing Iterativo</h1>
+        
+        <form action="/tsp" method="POST" class="formulario">
+            <label>Selecciona la ciudad de inicio:</label>
+            <select name="inicio_ciudad">
+                {% for ciudad in ciudades %}
+                <option value="{{ ciudad }}">{{ ciudad }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Calcular Ruta</button>
+        </form>
+
+        <button id="agregarNueva">Agregar Nueva Ciudad</button>
+
+        <form id="nuevaCiudadForm" action="/tsp" method="POST" style="display:none;" class="formulario">
+            <input type="text" name="ciudad" placeholder="Nombre de ciudad">
+            <input type="text" name="latitud" placeholder="Latitud">
+            <input type="text" name="longitud" placeholder="Longitud">
+            <button type="submit">Añadir y Calcular</button>
+        </form>
+        
+        {% if ruta %}
+        <div id="resultado">
+            <p>Mejor Ruta: <strong>{{ ruta|join(' → ') }}</strong></p>
+            <p>Distancia Total: <strong>{{ distancia_total }} km</strong></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById("agregarNueva").addEventListener("click", () => {
+            document.getElementById("nuevaCiudadForm").style.display = "block";
+        });
+    </script>
+
+</body>
+</html>
