@@ -2,6 +2,7 @@ from flask import Flask, request, render_template
 import math
 import random
 from flask_cors import CORS  
+import os  
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -29,27 +30,24 @@ def evalua_ruta(ruta, coord):
     total += distancia(coord[ruta[-1]], coord[ruta[0]])  
     return total
 
-def hill_climbing_iterativo(coord, inicio, iteraciones=10):
+def hill_climbing_iterativo(coord, iteraciones=10):
     mejor_ruta_global = None
     mejor_distancia_global = float('inf')
 
     for _ in range(iteraciones):  
         ruta = list(coord.keys())
-
-        if inicio in ruta:
-            ruta.remove(inicio)
-            ruta.insert(0, inicio)  
+        random.shuffle(ruta)  
 
         mejor_ruta = ruta[:]
         max_iteraciones = 10
 
         while max_iteraciones > 0:
             mejora = False
-            random.shuffle(ruta[1:])  
+            random.shuffle(ruta)  
             dist_actual = evalua_ruta(ruta, coord)
 
-            for i in range(1, len(ruta)):  
-                for j in range(1, len(ruta)):  
+            for i in range(len(ruta)):  
+                for j in range(len(ruta)):  
                     if i != j:
                         ruta_tmp = ruta[:]
                         ruta_tmp[i], ruta_tmp[j] = ruta_tmp[j], ruta_tmp[i]
@@ -73,15 +71,14 @@ def hill_climbing_iterativo(coord, inicio, iteraciones=10):
 
 @app.route('/')
 def home():
-    return render_template('index.html', ciudades=list(coord.keys()))
+    mejor_ruta, distancia_total = hill_climbing_iterativo(coord)
+    return render_template('index.html', ciudades=list(coord.keys()), ruta=mejor_ruta, distancia_total=distancia_total)
 
 @app.route('/tsp', methods=['POST'])
 def resolver_tsp():
-    inicio = request.form.get('inicio_ciudad')
-
-    mejor_ruta, distancia_total = hill_climbing_iterativo(coord, inicio)
-
+    mejor_ruta, distancia_total = hill_climbing_iterativo(coord)
     return render_template('index.html', ciudades=list(coord.keys()), ruta=mejor_ruta, distancia_total=distancia_total)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

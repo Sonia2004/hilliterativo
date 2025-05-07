@@ -12,13 +12,6 @@
         <h1>Algoritmo TSP con Hill Climbing Iterativo</h1>
         
         <form action="/tsp" method="POST" class="formulario">
-            <label>Selecciona la ciudad de inicio:</label>
-            <select name="inicio_ciudad">
-                {% for ciudad in ciudades %}
-                <option value="{{ ciudad }}">{{ ciudad }}</option>
-                {% endfor %}
-            </select>
-
             <button type="submit">Calcular Ruta</button>
         </form>
 
